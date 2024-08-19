@@ -80,9 +80,30 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 }
             }
             break;
+            
+        case 'left_menu':
+            $sql = "";
+            $sql ="select * from tb_menu_x where type_code = '{$data['type_code']}' and admin_flag = '' order by concat(path,id);";
+            $sql ="call proc_get_user_type_menu('{$data['user_id']}', '{$data['type_code']}', '{$data['$admin_flag']}');";
+            
+            $data=$ado->Retrieve($sql);
+            
+            $arrResult['rows'] = $data;
+            $arrResult['isExist'] = false;
+            if ($data != false){
+                if (count($arrResult['rows']) > 0) {
+                    $arrResult['isExist'] = true;
+                }else{
+                    $arrResult['isExist'] = false;
+                }
+            }
+            break;
+            
+            break;
         case 'retrieve':
             $sql = "";
             break;
+            
         case 'edit':
             $sql = "";
             break;

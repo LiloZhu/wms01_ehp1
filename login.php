@@ -22,7 +22,10 @@
     
   <!-- AnjularJS -->
   <script src="plugins/angularJS/angular.min.js"></script>
+  
+  <!--  
   <script src="plugins/ngStorage/ngStorage.min.js"></script>
+  -->
   
   <!-- AdminLTE App 
   <script src="js/adminlte.min.js"></script>  
@@ -118,8 +121,9 @@
 			 });
 
 	 				
-		var app = angular.module("myapp",['ngStorage']);
-		app.controller("myctrl",function($scope,$localStorage,$sessionStorage,$http){
+		//var app = angular.module("myapp",['ngStorage']);
+		var app = angular.module("myapp",[]);
+		app.controller("myctrl",function($scope,$http){
 
 		$scope.datas = [];
 
@@ -129,7 +133,7 @@
 		//->
 		
 		$scope.login=function(){
-			$localStorage.language_code = $("#language_code");
+			//$localStorage.language_code = $("#language_code");
 			
 			$http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
 			$http({
@@ -144,6 +148,16 @@
                           
             }).then(function(data){
                 if (data.data.isExist == true){
+
+                	localStorage.setItem("uid", data.data.rows[0]["id"]);
+                	localStorage.setItem("user_code", data.data.rows[0]["user_code"]);
+                	localStorage.setItem("user_text", data.data.rows[0]["user_text"]);
+                	localStorage.setItem("company_code", data.data.rows[0]["company_code"]);
+                	localStorage.setItem("role_code", data.data.rows[0]["role_code"]);
+                	localStorage.setItem("role_text", data.data.rows[0]["role_text"]);
+                	localStorage.setItem("email", data.data.rows[0]["email"]);
+                	localStorage.setItem("language_code", $('#language_code').val());
+                    /*
 					$localStorage.uid = data.data.rows[0]["id"];
 					$localStorage.user_code = data.data.rows[0]["user_code"];
 					$localStorage.user_text = data.data.rows[0]["user_text"];
@@ -151,10 +165,11 @@
 					$localStorage.role_code = data.data.rows[0]["role_code"];
 					$localStorage.role_text = data.data.rows[0]["role_text"];
 					$localStorage.email = data.data.rows[0]["email"];
-
+*/
+					
 					$scope.log('Y');		
 					
-					var url = 'iframe.php';
+					var url = 'iframe_1.php';
 					window.location=url;     
             
                 }else{
@@ -306,8 +321,7 @@
 		    	        time: 3000, //3s后自动关闭
 		    	        btn: [ '知道了']
 		    	      });
-
-		      $localStorage.language_code = v;
+		      
 		      localStorage.setItem("language_code", v);
 			}
 		}

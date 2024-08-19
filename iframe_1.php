@@ -204,9 +204,8 @@ new classes\SYS\session_mysql();
 			<!-- Brand Logo -->
 			<a href="#" class="brand-link"
 				style="color: Orange; font-style: italic; font-weight: bold;"> <i
-				class="fas fa-building" style="font-size: 32px; color: Orange;"></i>[
-				{{$storage.company_code}} ]
-
+				class="fas fa-building" style="font-size: 32px; color: Orange;"></i>
+				{{ company_code }}
 			</a>
 
 			<!-- Sidebar -->
@@ -329,22 +328,29 @@ new classes\SYS\session_mysql();
 	<!-- Tempusdominus Bootstrap 4 -->
 	<script
 		src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-	<!-- Summernote -->
+	<!-- Summernote
 	<script src="plugins/summernote/summernote-bs4.min.js"></script>
-	<!-- overlayScrollbars -->
+	 -->
+	 
+	<!-- overlayScrollbars 
 	<script
 		src="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+    -->
+		
 
 	<script src="plugins/layui/layui.js"></script>
 
 	<!-- AnjularJS -->
 	<script src="plugins/angularJS/angular.min.js"></script>
+	<!--  
 	<script src="plugins/ngStorage/ngStorage.min.js"></script>
+    -->
 
-	<!-- AdminLTE App -->
+	<!-- AdminLTE App 
 	<script src="js/adminlte.js"></script>
 	<!-- AdminLTE for demo purposes -->
 	<script src="js/demo.js"></script>
+	-->
 
 	<!-- AngularJS -->
 	<script type="text/javascript">
@@ -353,12 +359,14 @@ new classes\SYS\session_mysql();
 			  var layer = layui.layer; //独立版的layer无需执行这一句
 			});
 		
-		var app = angular.module("myapp",['ngStorage']);
-		app.controller("myctrl",function($scope,$localStorage,$sessionStorage,$http){
+		//var app = angular.module("myapp",['ngStorage']);
+		var app = angular.module("myapp",[]);
+		app.controller("myctrl",function($scope,$http){
 
 		$scope.datas = [];
 
-		$scope.$storage = $localStorage;
+		$scope.language_code = localStorage.getItem("language_code");
+		$scope.company_code = localStorage.getItem("company_code");
 
 			
 		//---Function---
@@ -377,7 +385,7 @@ new classes\SYS\session_mysql();
 	$scope.AlertMaterial=function(){		
 		var x = document.documentElement.clientWidth/4;
 		var y = document.documentElement.clientHeight/4;
-		console.log($scope.$storage.company_code);	
+		//console.log($scope.$storage.company_code);	
 			
 		layer.open({
 		type: 2,
@@ -388,7 +396,7 @@ new classes\SYS\session_mysql();
 		offset: ['20%', '20%'],
 		area: ['70%', '70%'],
 		//area:['auto','auto'],
-		content: 'pages/alert_material.php?company_code=' + $scope.$storage.company_code + '&role_name='+ $scope.$storage.role_name ,
+		content: 'pages/alert_material.php?company_code=' + localStorage.getItem('company_code') + '&role_name='+ localStorage.getItem('role_name'),
 		end: function () { //最后执行reload
             //location.reload();
         	}
