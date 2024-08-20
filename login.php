@@ -29,7 +29,8 @@
   
   <!-- AdminLTE App 
   <script src="js/adminlte.min.js"></script>  
-  -->
+ --> 
+ 
   <!-- layui -->
   <script src="plugins/layui/layui.js"></script>
   <!-- Custom JS -->
@@ -38,7 +39,7 @@
   <!-- Custom JavaScript -->
   <script>
   $(document).ready(function(){
-	  SetFocusFieldById(true,"user_name");
+	  //SetFocusFieldById(true,"user_name");
 	  
   });
   </script>
@@ -56,13 +57,13 @@
       <p class="login-box-msg"></p>
        
         <div class="input-group mb-3">
-         <select class="custom-select" id="language_code" name="language_code" ng-model="language_code"  ng-change="selectLanguage(language_code);" placeholder="Language">
+         <select class="form-select" id="language_code" name="language_code" ng-model="language_code"  ng-change="selectLanguage(language_code);" placeholder="Language">
             <option ng-repeat="x in languages" value="{{x.language_code}}">{{x.language_text}}</option>
              <option value="" disabled selected style="display: none;">Select Languaget</option>
           </select>
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fa-solid fa-globe"></span>
+              <span class="fa-solid fa-globe login-icon"></span>
             </div>
           </div>
         </div>        
@@ -71,7 +72,7 @@
           <input type="text" class="form-control" id="user_name" name="user_name" ng-model="user_name" ng-keyup="keyup($event)" placeholder="User or Email">          
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fas fa-user"></span>
+              <span class="fas fa-user login-icon"></span>
             </div>
           </div>
         </div>
@@ -81,7 +82,7 @@
           <input type="password" class="form-control" id="password" name="password" ng-model="password" ng-keyup="keyup($event)" placeholder="Password">
           <div class="input-group-append">
             <div class="input-group-text">
-              <span class="fas fa-lock"></span>
+              <span class="fas fa-lock login-icon"></span>
             </div>
           </div>
         </div>
@@ -97,9 +98,11 @@
           </div>
           -->
           <!-- /.col -->
-          <div class=" text-right">
-            <button type="submit" class="btn btn-primary btn-block" ng-click="login()">登录</button>
-            <div>
+          <div>
+            <button type="submit" style="width: 100%" class="btn btn-primary btn-block" ng-click="login()">登录</button>
+            <div style="display: flex;
+                justify-content: flex-end;
+                align-items: flex-end;">
             <a class="small mt-3 pointer" href="./pages/registration.php">帐号申请...</a><span style="color:#C0C0C0"> | </span>
             <a class="small mt-3" href="./pages/forget_password.php">忘记密码...</a>
             </div>
@@ -169,7 +172,7 @@
 					
 					$scope.log('Y');		
 					
-					var url = 'iframe_1.php';
+					var url = 'iframe_2.php';
 					window.location=url;     
             
                 }else{
@@ -334,7 +337,7 @@
             	case 'password':
             		$scope.login(); 
             	default:
-            		SetFocusFieldById(true,'password'); 	
+            		//SetFocusFieldById(true,'password'); 	
 
             	}
             }
