@@ -35,7 +35,7 @@ function onCollapse(){
 
 function onLogout(){
 	$("#logout").click(function(){
-		window.location.href='/web/login';
+		window.location.href='/wms01/login.php';
 		layer.msg('xxxxx');
 
 	});

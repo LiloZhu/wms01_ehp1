@@ -231,6 +231,12 @@
 
 
 		$scope.info=function(){
+
+			$lang_code = $("#language_code").val();
+		    if ($lang_code == null || $lang_code == undefine || $lang_code == '')
+		    {
+			    $lang_code = 'ZH';
+		    }  
 			
 			$http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
 			$http({
@@ -238,7 +244,7 @@
                   cache: false,
                   data: $.param({action:'info', 
 					  arguments:{  
-						  language_code: 'ZH'
+						  language_code: $lang_code
 						  }
 						})
                           
@@ -318,13 +324,7 @@
 
 
 		$scope.selectLanguage = function(v){
-			if (v != undefined || v != null){
-		      layer.msg('<div style="padding: 15px;text-align:left;">登录失败：<br>'+ v +'</div>'
-		    	      , {
-		    	        time: 3000, //3s后自动关闭
-		    	        btn: [ '知道了']
-		    	      });
-		      
+			if (v != undefined || v != null){		      
 		      localStorage.setItem("language_code", v);
 			}
 		}

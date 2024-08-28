@@ -239,7 +239,7 @@
         $.each(menuExtList,function(i,item){
 
             var newTab = "<li class='nav-item' role='presentation'> <a class='nav-link p-0 ' data-bs-toggle='tab' data-name='"+ i +"' href='#"+ i +"'>"+ item.name +"<i class='bi bi-x-lg ms-2 text-end'></i></a></li>";
-            var newTabPane = "<div id='"+ i +"' class='tab-pane iframe-contnet '><iframe src='mywms?guid="+ item.url +"' style='float:top' width='100%' height='100%' frameborder='0'></iframe></div>";
+            var newTabPane = "<div id='"+ i +"' class='tab-pane iframe-contnet '><iframe src='adm?guid="+ item.url +"' style='float:top' width='100%' height='100%' frameborder='0'></iframe></div>";
 
             $("#myTab").append(newTab);
             $("#myTabPane").append(newTabPane);
