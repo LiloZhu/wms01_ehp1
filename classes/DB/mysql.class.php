@@ -2,11 +2,13 @@
 namespace classes\DB{
     
     class mysql {
-        private $db_host = 'localhost' ;    //Database Host
-        //private $db_host = '192.168.31.189' ;    //Database Host
+        //private $db_host = 'localhost' ;    //Database Host
+        private $db_host = 'svr02.nuc01.com' ;    //Database Host
         private $db_user = 'admin';         //Database User
         private $db_pwd  = 'password';     //Database User Password
         private $db_database = 'wms01_db';     //Database
+        //private $db_port = "3360";
+        private $db_port = "5316";
         protected $charset = 'utf8'; 
         
         private $mysqli; 
@@ -19,6 +21,7 @@ namespace classes\DB{
             $this->db_user = isset($arr['db_user'])? $arr['db_user']:$this->db_user;
             $this->db_pwd = isset($arr['db_pwd'])? $arr['db_pwd']:$this->db_pwd;
             $this->db_database = isset($arr['db_database'])? $arr['db_database']:$this->db_database;
+            $this->db_port = isset($arr['db_port'])? $arr['db_port']:$this->db_port;
             $this->charset = isset($arr['charset'])?$arr['charset']:$this->charset;
             
             //$this->connect();
@@ -27,7 +30,7 @@ namespace classes\DB{
         }
         
          public function connect_db(){
-             $this->mysqli = @new \mysqli($this->db_host,$this->db_user,$this->db_pwd,$this->db_database);
+             $this->mysqli = @new \mysqli($this->db_host,$this->db_user,$this->db_pwd,$this->db_database,$this->db_port);
              if(!$this->mysqli){
                  echo '数据库连接错误.<br/>';
                  echo '错误编号'.$this->mysqli->connect_errno,'<br/>';

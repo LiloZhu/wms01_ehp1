@@ -206,7 +206,7 @@
                             str_html +="<div class='accordion-body p-0'>";
                             str_html +="<div class='list-group'>";
                         }else{
-                            str_html +="<a data-bs-toggle='tab' data-url='"+row.id+"' data-name='"+row.uuid+"' href='#"+row.uuid+"' class='list-group-item list-group-item-action menu-item'>"+row.menu_name+"</a>";
+                            str_html +="<a data-bs-toggle='tab' data-url='"+row.url+"' data-name='"+row.id+"' href='"+row.url+"' class='list-group-item list-group-item-action menu-item'>"+row.menu_name+"</a>";
                         }
 
                     })
@@ -238,8 +238,8 @@
 
         $.each(menuExtList,function(i,item){
 
-            var newTab = "<li class='nav-item' role='presentation'> <a class='nav-link p-0 ' data-bs-toggle='tab' data-name='"+ i +"' href='#"+ i +"'>"+ item.name +"<i class='bi bi-x-lg ms-2 text-end'></i></a></li>";
-            var newTabPane = "<div id='"+ i +"' class='tab-pane iframe-contnet '><iframe src='adm?guid="+ item.url +"' style='float:top' width='100%' height='100%' frameborder='0'></iframe></div>";
+            var newTab = "<li class='nav-item' role='presentation'> <a class='nav-link p-0 ' data-bs-toggle='tab' data-name='"+ i +"' href='"+ i +"'>"+ item.name +"<i class='bi bi-x-lg ms-2 text-end'></i></a></li>";
+            var newTabPane = "<div id='"+ i +"' class='tab-pane iframe-contnet '><iframe src='"+ item.url +"' style='float:top' width='100%' height='100%' frameborder='0'></iframe></div>";
 
             $("#myTab").append(newTab);
             $("#myTabPane").append(newTabPane);
@@ -318,8 +318,8 @@
 
         $('.nav-link').removeClass('active');
         $('.iframe-contnet').removeClass('active');
-        var newTab = "<li class='nav-item' role='presentation'> <a class='nav-link active p-0 ' data-bs-toggle='tab' data-name='"+ this.dataset.name +"' href='#"+ this.dataset.name +"'>"+ this.text +"<i class='bi bi-x-lg ms-2 text-end'></i></a></li>";
-        var newTabPane = "<div id='"+ this.dataset.name +"' class='tab-pane iframe-contnet active'><iframe src='mywms?guid="+ this.dataset.url +"' style='float:top' width='100%' height='100%' frameborder='0'></iframe></div>";
+        var newTab = "<li class='nav-item' role='presentation'> <a class='nav-link active p-0 ' data-bs-toggle='tab' data-name='"+ this.dataset.name +"' href='"+ this.dataset.url +"'>"+ this.text +"<i class='bi bi-x-lg ms-2 text-end'></i></a></li>";
+        var newTabPane = "<div id='"+ this.dataset.name +"' class='tab-pane iframe-contnet active'><iframe src='"+ this.dataset.url +"' style='float:top' width='100%' height='100%' frameborder='0'></iframe></div>";
 
         if (flag == false){
             menuExtList[this.dataset.name] = { name: this.text, url: this.dataset.url } ;

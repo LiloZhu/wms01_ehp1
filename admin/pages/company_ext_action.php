@@ -1,0 +1,175 @@
+<?php
+//set html charset utf-8
+header('Access-Control-Allow-Origin:*');
+header('Access-Control-Allow-Methods:POST,GET');
+header('Access-Control-Allow-Credentials:true');
+header("Content-Type: application/json;charset=utf-8");
+//header("Content-Type: text/plain;charset=utf-8"); 
+//header("Content-Type: text/xml;charset=utf-8"); 
+//header("Content-Type: text/html;charset=utf-8"); 
+//header("Content-Type: application/javascript;charset=utf-8");
+
+
+function autoload ($class_name){
+    $class_file = '../../'.str_replace('\\','/',$class_name). '.class.php';
+    if (file_exists($class_file))
+    {
+        require_once($class_file);
+        
+        if(class_exists($class_name,false))
+        {
+            return true;
+        }
+        return false;
+    }
+    return false;
+    
+}
+
+if(function_exists('spl_autoload_register')) {
+    spl_autoload_register('autoload');
+}
+
+$ado = new classes\DB\mysql_helper();
+new classes\SYS\session_mysql();
+
+$arrResult = array();
+$data=array();
+$action_flag="";
+$uid = isset($_SESSION['uid'])?$_SESSION['uid']:'';
+$company_code = isset($_SESSION['company_code'])?$_SESSION['company_code']:'';
+$role = isset($_SESSION['role_code'])?$_SESSION['role_code']:'';
+
+if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    
+    
+} elseif ($_SERVER["REQUEST_METHOD"] == "POST"){
+    $data = $_POST['arguments'];
+    $dt = date( "Y.m.d H:i:s" );  //PHP
+    //$dt = "date_format(now(),'%Y.%m.%d %H:%i:%s')";  //MySQL
+    
+    switch($_POST['action']) {
+        case 'retrieve':
+            $sql = "";
+            $sql .= "SELECT * FROM tb_company where ifnull(delete_flag,'') = false ";
+            if ($data['company_code'] <> '' && $data['company_code'] <> null ){
+                $sql .= "and company_code = '{$data['company_code']}' ";
+            }
+            
+            $res = $ado->Retrieve($sql);
+            if (empty($res)){
+                $res = [];
+            }
+            
+            $arrResult['rows'] = $res;
+            $arrResult['total'] = count($arrResult['rows']);
+            $arrResult['totalNotFiltered'] = 100;
+            break;
+        case 'add':
+            
+            $sql ="";
+            $sql .= "insert into tb_company (company_code,
+                                             company_text,
+                                             country_code,
+                                             currency_code,
+                                             language_code,
+                                             address,
+                                             tel_number,
+                                             tel_extens,
+                                             mobile,
+                                             fax,
+                                             active,
+                                             delete_flag,
+                     create_at,create_by,change_at,change_by)
+                     values('{$data['company_code']}',
+                            '{$data['company_text']}',
+                            'CN',
+                            'CNY',
+                            'ZH',
+                            '{$data['address']}',  
+                            '{$data['tel_number']}',  
+                            '{$data['tel_extens']}', 
+                            '{$data['mobile']}', 
+                            '{$data['fax']}', 
+                             true,false,
+                     sysdate(),'{$uid}',sysdate(),'{$uid}');";
+            
+            $action_flag = $ado->Create($sql);
+            $arrResult['message']= $sql;
+            if ($action_flag != FALSE){
+                $arrResult['success']= true;
+                $arrResult['message']= $sql;
+            }
+            break;
+        case 'edit':
+            
+            
+            $sql ="";
+            $sql .= "update tb_company set company_code = '{$data['company_code']}',
+                                           company_text = '{$data['company_text']}',
+                                           address = '{$data['address']}',
+                                           tel_number = '{$data['tel_number']}',
+                                           tel_extens = '{$data['tel_extens']}',
+                                           mobile = '{$data['mobile']}',
+                                           fax = '{$data['fax']}',           
+                                           change_at = sysdate() ,change_by = '{$uid}'
+                     where id = '{$data['id']}'; ";
+            
+            $action_flag = $ado->Update($sql);
+            if ($action_flag > 0){
+                $arrResult['success']= true;
+                $arrResult['message']= $data['role_code'];
+            }
+            break;
+        case 'delete':
+            //$sql = "update tb_user set delete_flag = true,change_at = sysdate(), change_by = '{$uid}' where id = '{$data['key']}'; ";
+            $sql = "update tb_company set delete_flag = true,change_at = sysdate(),change_by = '{$uid}' where id = '{$data['key']}'; ";
+            $action_flag = $ado->Update($sql);
+            
+            //$_crrentPage = parseInt($_crrentPage);
+            
+            if ($action_flag != false){
+                $arrResult['success']= true;
+                $arrResult['message']= 'delete';
+            }
+            break;
+        case 'role_menu_retrieve':
+            $sql = "call proc_get_role_menu('{$data['role_id']}');";
+            
+            $res = $ado->Retrieve($sql);
+            if (empty($res)){
+                $res = [];
+            }
+            
+            $arrResult['rows'] = $res;
+            $arrResult['total'] = count($arrResult['rows']);
+            $arrResult['totalNotFiltered'] = 100;
+            break;
+        case 'role_menu_edit':
+            $sql ="";
+            $sql .= "delete from tb_role_menu where role_id = '{$data['role_id']}'";
+            $action_flag = $ado->Delete($sql);
+            
+            foreach($data['menu_ids'] as $menu_id) {
+                $sql ="";
+                $sql .= "insert tb_role_menu (role_id,menu_id) values ('{$data['role_id']}','$menu_id')";
+                
+                $action_flag = $ado->Create($sql);
+            }
+            
+            $arrResult['message']= $sql;
+            if ($action_flag != FALSE){
+                $arrResult['success']= true;
+                $arrResult['message']= $sql;
+            }
+            break;
+        default:
+            
+    }
+}
+
+//<---
+
+echo json_encode($arrResult);
+//<---End
+?>

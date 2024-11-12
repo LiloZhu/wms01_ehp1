@@ -20,13 +20,7 @@
   <script src="plugins/handlebars.js/handlebars.min.js"></script>
   <script src="plugins/underscore/underscore-min.js"></script>
     
-  <!-- AnjularJS -->
-  <script src="plugins/angularJS/angular.min.js"></script>
-  
-  <!--  
-  <script src="plugins/ngStorage/ngStorage.min.js"></script>
-  -->
-  
+
   <!-- AdminLTE App 
   <script src="js/adminlte.min.js"></script>  
  --> 
@@ -45,31 +39,32 @@
   </script>
 </head>
 
-<body class="hold-transition login-page" ng-app="myapp" ng-controller="myctrl">>
+<body class="hold-transition login-page">>
+
 <div class="login-box" style="margin-top: -10%;">
   <!-- /.login-logo -->
   <div class="card card-outline card-primary">
     <div class="card-header text-center">
-    	<div class="system-version-top-right"><span class="badge bg-primary system-version">(v0.0.0)</span></div>
-      	<div class="login-box-title"><a href="#"><b class="login-box-title system-title">system name</b></a></div>
+    	<div class="system-version-top-right"><span class="badge bg-primary system-version">{{version}}</span></div>
+      	<div class="login-box-title"><a href="#"><b class="login-box-title system-title">{{system_name}}</b></a></div>
     </div>
     <div class="card-body">
       <p class="login-box-msg"></p>
-       
-        <div class="input-group mb-3">
-         <select class="form-select" id="language_code" name="language_code" ng-model="language_code"  ng-change="selectLanguage(language_code);" placeholder="Language">
-            <option ng-repeat="x in languages" value="{{x.language_code}}">{{x.language_text}}</option>
-             <option value="" disabled selected style="display: none;">Select Languaget</option>
-          </select>
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fa-solid fa-globe login-icon"></span>
-            </div>
-          </div>
-        </div>        
+      
+      <div class="input-group mb-3">
+      <select class="form-select form-select-sm" id="system_language" aria-label="Large select example">
+      <option selected>Please Select Login Language</option>
+   	  </select>
+   	  <div class="input-group-append">
+        <div class="input-group-text">
+          <span class="fa-solid fa-globe login-icon"></span>
+        </div>
+      </div>
+      </div>
+        
         
         <div class="input-group mb-3">
-          <input type="text" class="form-control" id="user_name" name="user_name" ng-model="user_name" ng-keyup="keyup($event)" placeholder="User or Email">          
+          <input type="text" class="form-control" id="user_name" name="user_name"  keyup="keyup($event)" placeholder="User or Email">          
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-user login-icon"></span>
@@ -79,7 +74,7 @@
         
         
         <div class="input-group mb-3">
-          <input type="password" class="form-control" id="password" name="password" ng-model="password" ng-keyup="keyup($event)" placeholder="Password">
+          <input type="password" class="form-control" id="password" name="password" keyup="keyup($event)" placeholder="Password">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-lock login-icon"></span>
@@ -99,7 +94,7 @@
           -->
           <!-- /.col -->
           <div>
-            <button type="submit" style="width: 100%" class="btn btn-primary btn-block" ng-click="login()">登录</button>
+            <button type="submit" style="width: 100%" class="btn btn-primary btn-block" onclick="login()">登录</button>
             <div style="display: flex;
                 justify-content: flex-end;
                 align-items: flex-end;">
@@ -117,249 +112,145 @@
 </div>
 <!-- /.login-box -->
 </body>
-<!-- AngularJS -->
-		<script type="text/javascript">
+
+<!--JS -->
+	<script type="text/javascript">
 		 layui.use('layer', function(){ //独立版的layer无需执行这一句
 			  var layer = layui.layer; //独立版的layer无需执行这一句
 			 });
 
-	 				
-		//var app = angular.module("myapp",['ngStorage']);
-		var app = angular.module("myapp",[]);
-		app.controller("myctrl",function($scope,$http){
 
-		$scope.datas = [];
 
-		$scope.languages = [];
-			
-		//---Function---
-		//->
+		async function sysInfo(){
+            const response = await fetch('login_action.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ action: 'language' })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
+                if(data.isExist){
+                    for (let i = 0; i < data.rows.length; i++) {
+                        console.log(data.rows[i]); // Prints each fruit
+
+                        var vOption = document.createElement('option');
+						vOption.value = data.rows[i].language_code;
+						vOption.text = data.rows[i].language_text;
+
+					    var selectElement = document.getElementById('system_language');
+					    selectElement.appendChild(vOption);						
+                        
+                    }
+
+                    if(localStorage.getItem("language_code") != null || localStorage.getItem("language_code") != undefine || localStorage.getItem("language_code") != '')
+                    {
+                    	document.getElementById("system_language").value = localStorage.getItem("language_code");
+                    }
+
+
+                    
+                }
+				
+                console.log(data);
+            } else {
+                console.error('Network response was not ok', response.status);
+            }		
+		}
+
+
+
+	   async function systemInfo(){
+		  var lang_code =  $("#language_code").val();
+		  if (lang_code == null || lang_code == undefine || lang_code == '')
+			 {
+		       lang_code = 'ZH';
+			 }  
+		  
+          const response = await fetch('login_action.php', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ action: 'info',
+ 				 arguments: {
+					 language_code: lang_code
+		    		}
+	    		 })
+          });
+
+
+          if (response.ok) {
+              const data = await response.json();
+              if(data.isExist){
+                  $(".system-title").text(data.rows[0]["system_text"]);
+                  $(".system-version").text(data.rows[0]["version"]);				                  
+              }	
+			  	
+              console.log(data);
+          } else {
+              console.error('Network response was not ok', response.status);
+          }	
+          	      
+		    
+	   }	
+
+
+	  async function login(){
+		  var lang_code =  $("#language_code").val();
+		  if (lang_code == null || lang_code == undefine || lang_code == '')
+			 {
+		       lang_code = 'ZH';
+			 }  
+		  
+          const response = await fetch('login_action.php', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ action: 'login',
+ 				 arguments: {
+ 					user_code:     $("#user_name").val(),
+ 					user_password: $("#password").val(), 
+		    		}
+	    		 }) 
+          });
+
+
+          if (response.ok) {
+              const data = await response.json();
+              if(data.isExist){
+              	localStorage.setItem("uid", data.rows[0]["id"]);
+            	localStorage.setItem("user_code", data.rows[0]["user_code"]);
+            	localStorage.setItem("user_text", data.rows[0]["user_text"]);
+            	localStorage.setItem("company_code", data.rows[0]["company_code"]);
+            	localStorage.setItem("role_code", data.rows[0]["role_code"]);
+            	localStorage.setItem("role_text", data.rows[0]["role_text"]);
+            	localStorage.setItem("email", data.rows[0]["email"]);
+            	localStorage.setItem("language_code", $('#system_language').val());		
+
+
+				var url = 'iframe_2.php';
+				window.location=url;     
+            		                  
+              }	
+			  	
+              console.log(data);
+          } else {
+              console.error('Network response was not ok', response.status);
+          }	
+          	  
+	  }
+
 		
-		$scope.login=function(){
-			//$localStorage.language_code = $("#language_code");
-			
-			$http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
-			$http({
-                method: 'post', url: 'login_action.php', 
-                  cache: false,
-                  data: $.param({action:'login', 
-					  arguments:{  
-						  user_code: $("#user_name").val(),
-						  user_password: $scope.password, 	
-						  }
-						})
-                          
-            }).then(function(data){
-                if (data.data.isExist == true){
-
-                	localStorage.setItem("uid", data.data.rows[0]["id"]);
-                	localStorage.setItem("user_code", data.data.rows[0]["user_code"]);
-                	localStorage.setItem("user_text", data.data.rows[0]["user_text"]);
-                	localStorage.setItem("company_code", data.data.rows[0]["company_code"]);
-                	localStorage.setItem("role_code", data.data.rows[0]["role_code"]);
-                	localStorage.setItem("role_text", data.data.rows[0]["role_text"]);
-                	localStorage.setItem("email", data.data.rows[0]["email"]);
-                	localStorage.setItem("language_code", $('#language_code').val());
-                    /*
-					$localStorage.uid = data.data.rows[0]["id"];
-					$localStorage.user_code = data.data.rows[0]["user_code"];
-					$localStorage.user_text = data.data.rows[0]["user_text"];
-					$localStorage.company_code = data.data.rows[0]["company_code"];
-					$localStorage.role_code = data.data.rows[0]["role_code"];
-					$localStorage.role_text = data.data.rows[0]["role_text"];
-					$localStorage.email = data.data.rows[0]["email"];
-*/
-					
-					$scope.log('Y');		
-					
-					var url = 'iframe_2.php';
-					window.location=url;     
-            
-                }else{
-                	$scope.log('N');
-                	$scope.loginFail();
-                }
-            }).catch(function(error){
-            	$scope.log('N');
-            	$scope.loginFail();
-                console.log('error'+ error)
-            });
-			
-			/*
-	    	$.ajax({
-	    		url: "login_action.php",
-	    		type: "POST",
-	    		dataType: "json",
-	    	    data:{action:'login', 
-	      		      arguments:{
-						  user_code: $scope.user_name,
-						  user_password: $scope.password, 
-	    			      }
-	    				},				
-	    		success: function(rs){
-	    			console.log(rs)
-	    			var rows = rs.rows;
-	    			
-	                  params.success({ //注意，必须返回参数 params
-	    	            total: rs.total,
-	    	            rows: rows
-	    	        });
-
-	                  if (data.data.isExist == true){
-	  					$localStorage.uid = data.data.rows[0]["id"];
-	  					$localStorage.user_code = data.data.rows[0]["user_code"];
-	  					$localStorage.user_text = data.data.rows[0]["user_text"];
-	  					$localStorage.company_code = data.data.rows[0]["company_code"];
-	  					$localStorage.role_code = data.data.rows[0]["role_code"];
-	  					$localStorage.role_text = data.data.rows[0]["role_text"];
-	  					$localStorage.email = data.data.rows[0]["email"];
-
-						var url = 'iframe.php';
-						window.location=url;
-	                  }
-								    	        
-	    
-	    			//debugger;
-	    		},
-	    		error: function(rs){
-	    			console.log(rs)
-	    		}
-	       });
-			*/
-			
-		}
-
-
-		$scope.info=function(){
-
-			$lang_code = $("#language_code").val();
-		    if ($lang_code == null || $lang_code == undefine || $lang_code == '')
-		    {
-			    $lang_code = 'ZH';
-		    }  
-			
-			$http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
-			$http({
-                method: 'post', url: 'login_action.php', 
-                  cache: false,
-                  data: $.param({action:'info', 
-					  arguments:{  
-						  language_code: $lang_code
-						  }
-						})
-                          
-            }).then(function(data){
-                if (data.data.isExist == true){
-                    $(".system-title").text(data.data.rows[0]["system_text"]);
-                    $(".system-version").text(data.data.rows[0]["version"]);
-					//$scope.log('Y');
-                }
-            }).catch(function(error){
-            	//$scope.log('N');
-            	//$scope.loginFail();
-                console.log('error'+ error)
-            });	
-            
-		}
-
-
-		$scope.language=function(){
-			
-			$http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
-			$http({
-                method: 'post', url: 'login_action.php', 
-                  cache: false,
-                  data: $.param({action:'language', 
-					  arguments:{  
-						  language_code: 'ZH'
-						  }
-						})
-                          
-            }).then(function(data){
-                if (data.data.isExist == true){
-                  $scope.languages = data.data.rows;
-
-                  /*
-                  if($localStorage.language_code !="" || $localStorage.language_code != null || $localStorage.language_code != undefined){
-					//$("#language_code").val($localStorage.language_code);
-					if (object.prototype.toString.call($localStorage.language_code) != '[object Object]'){
-					$scope.language_code = $localStorage.language_code;
-					}
-                  }
-                  */
-
-                  if(localStorage.getItem("language_code") !=""){
-                	  $scope.language_code = localStorage.getItem("language_code");
-                  }
-                      
-                }
-            }).catch(function(error){
-            	//$scope.log('N');
-            	//$scope.loginFail();
-                console.log('error'+ error)
-            });	
-            
-		}		
-
-		$scope.log=function($status_code){
-			$http.defaults.headers.post["Content-Type"] = "application/json";
-			$http({
-                method: 'post', url: 'login_action.php', 
-                  cache: false,
-                  data: $.param({action:'log', 
-					  arguments:{  
-						  user_code: $scope.user_name,
-						  where_use: 'web',
-						  status_code: $status_code
-						  }
-						})
-                          
-            }).then(function(data){
-            	console.log('success')
-            }).catch(function(error){
-                console.log('error'+ error)
-            });
-			
-		}	
-
-
-		$scope.selectLanguage = function(v){
-			if (v != undefined || v != null){		      
-		      localStorage.setItem("language_code", v);
-			}
-		}
-
-		$scope.keyup = function(e){
-            var keycode = window.event?e.keyCode:e.which;
-            var fileName = e.currentTarget.name;
-            if(keycode==13){
-            	switch(fileName){
-            	case 'password':
-            		$scope.login(); 
-            	default:
-            		//SetFocusFieldById(true,'password'); 	
-
-            	}
-            }
-       }
-
-	  $scope.loginFail = function(e){
-	      //配置一个透明的询问框
-	      layer.msg('<div style="padding: 15px;text-align:left;">登录失败：<br>用户名或密码输入错误，请得新输入!</div>'
-	      , {
-	        time: 3000, //3s后自动关闭
-	        btn: [ '知道了']
-	      });
-	    }			
-			
-		//<-
-
-	  $scope.info();
-	  $scope.language();
-
-							
+		sysInfo();
+		systemInfo();
+				
 				
 		//<-End		
-		});
+
 	</script>
 </html>
