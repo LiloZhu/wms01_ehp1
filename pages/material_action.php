@@ -1,4 +1,6 @@
 <?php
+use classes\SYS\common;
+
 //set html charset utf-8
 //header("Content-Type: text/plain;charset=utf-8"); 
 header('Access-Control-Allow-Origin:*');
@@ -38,25 +40,58 @@ $data=array();
 $action_flag="";
 $uid = isset($_SESSION['uid'])?$_SESSION['uid']:'';
 $company_code = isset($_SESSION['company_code'])?$_SESSION['company_code']:'';
-
+$company_code = isset($_SESSION['language_code'])?$_SESSION['language_code']:'';
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     
     
 } elseif ($_SERVER["REQUEST_METHOD"] == "POST"){
-    $data = $_POST['arguments'];
+    $input = json_decode(file_get_contents('php://input'), true);
+    
+    $data = $input['arguments']?$input['arguments']:[];
+    $action = $input['action']?$input['action']:'';
     $_crrentPage = isset($data['currentPage'])?$data['currentPage']:0;
     $dt = date( "Y.m.d H:i:s" );  //PHP
     //$dt = "date_format(now(),'%Y.%m.%d %H:%i:%s')";  //MySQL
     
-    switch($_POST['action']) {
+    switch($action) {
+        case 'retrieve1':
+            $sql = "";
+            $sql = "call proc_table_to_html('v_mat_text','datatable_material');";
+            
+            
+            $data=$ado->Retrieve($sql);
+            
+            $arrResult['rows'] = $data;
+            $arrResult['isExist'] = false;
+            if ($data != false){
+                if (count($arrResult['rows']) > 0) {
+                    $arrResult['isExist'] = true;
+                    
+                }else{
+                    $arrResult['isExist'] = false;
+                }
+            }
+            
+            break;
         case 'retrieve':
             $sql = "";
-            $sql = "select * from v_mat_text where company_code = '{$company_code}';";
+            $sql = "select * from v_mat_text where company_code = '{$data['company_code']}' ";
             
-            $arrResult['rows'] = $ado->Retrieve($sql);
-            $arrResult['total'] = is_array($arrResult['rows']) ? count($arrResult['rows']):0;
-            $arrResult['totalNotFiltered'] = 100;
+            
+            $data=$ado->Retrieve($sql);
+            
+            $arrResult['rows'] = $data;
+            $arrResult['isExist'] = false;
+            if ($data != false){
+                if (count($arrResult['rows']) > 0) {
+                    $arrResult['isExist'] = true;
+                    
+                }else{
+                    $arrResult['isExist'] = false;
+                }
+            }
+            
             break;
         case 'add':
             $sql = "";

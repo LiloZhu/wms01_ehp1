@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Common Modal Dialog</title>
+    <style>
+        /* Modal Styles */
+        .modal {
+            display: none;  /* Hidden by default */
+            position: fixed;  /* Stay in place */
+            z-index: 1;  /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;  /* Full width */
+            height: 100%;  /* Full height */
+            overflow: auto;  /* Enable scroll if needed */
+            background-color: rgb(0,0,0);  /* Fallback color */
+            background-color: rgba(0,0,0,0.4);  /* Black with opacity */
+            padding-top: 60px;
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;  /* Could be more or less, depending on screen size */
+            max-width: 600px;
+            border-radius: 8px;
+        }
+
+        /* Close Button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Optional: Some additional styling for the modal buttons */
+        .modal-footer {
+            text-align: right;
+        }
+        .modal-footer button {
+            padding: 8px 16px;
+            margin: 0 5px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Button to Open the Modal -->
+<button id="openModalBtn">Open Modal</button>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Modal Title</h2>
+        <p>This is a common modal dialog. You can place any content here, such as text, forms, images, etc.</p>
+        <div class="modal-footer">
+            <button id="modalCancelBtn">Cancel</button>
+            <button id="modalOkBtn">OK</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get the modal, buttons, and close elements
+    var modal = document.getElementById("myModal");
+    var openModalBtn = document.getElementById("openModalBtn");
+    var closeModalBtn = document.getElementsByClassName("close")[0];
+    var cancelModalBtn = document.getElementById("modalCancelBtn");
+    var okModalBtn = document.getElementById("modalOkBtn");
+
+    // Open the modal when the user clicks the button
+    openModalBtn.onclick = function() {
+        modal.style.display = "block";
+    }
+
+    // Close the modal when the user clicks the "x" (close button)
+    closeModalBtn.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // Close the modal when the user clicks the "Cancel" button
+    cancelModalBtn.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // Handle OK button action
+    okModalBtn.onclick = function() {
+        alert("You clicked OK!");
+        modal.style.display = "none";
+    }
+
+    // Close the modal if the user clicks anywhere outside of the modal content
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+
+</body>
+</html>

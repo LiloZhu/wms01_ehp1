@@ -3,7 +3,7 @@ namespace classes\DB{
     
     class mysql {
         //private $db_host = 'localhost' ;    //Database Host
-        private $db_host = 'svr02.nuc01.com' ;    //Database Host
+        private $db_host = 'svr02.ides01.com' ;    //Database Host
         private $db_user = 'admin';         //Database User
         private $db_pwd  = 'password';     //Database User Password
         private $db_database = 'wms01_db';     //Database

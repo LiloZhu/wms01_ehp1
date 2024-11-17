@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Material</title>
+<!-- CSS -->
+<link rel="stylesheet" href="../plugins/bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet" href="../plugins/layui/css/layui.css" />
+
+<!--jquery-->
+<script src="../plugins/jquery/jquery.min.js"></script>
+<script src="../plugins/fontawesome-free/js/all.min.js"></script>
+
+<!-- Bootstrap 4 -->
+<script src="../plugins/bootstrap/js/bootstrap.min.js"></script>
+<!-- overlayScrollbars -->
+<script src="../plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+<script src="../plugins/moment/moment.min.js"></script>
+<script src="../plugins/layui/layui.js"></script>
+
+
+<!-- Current Page CSS Style -->
+<style>
+caption {
+	text-align: left;
+	caption-side: top;
+}
+
+.select, #locale {
+	width: 100%;
+}
+
+.like {
+	margin-right: 10px;
+}
+</style>
+
+<!-- Current Page Script Action -->
+<script>  
+$(document).ready(function(){
+//===> Begin
+	var
+    $add = $("#btn_add"),
+    $edit = $("#btn_edit"),
+    $delete = $("#btn_delete"),
+    $refresh = $("#btn_refresh"),
+    $table = $("#table");
+	
+  /*---Button Action---*/
+    $edit.on('click', function(){
+    var action = '#edit_';
+    var row = getSelections()[0];
+     	    
+    var action = '#edit_';
+    
+    $('' + action + 'id').val(row.id);
+    $('' + action + 'mat_code').val(row.mat_code);
+    $('' + action + 'mat_text').val(row.mat_text);
+    $('' + action + 'cust_mat_code').val(row.cust_mat_code);
+    $('' + action + 'base_unit').val(row.base_unit);
+    $('' + action + 'min_packing_qty').val(row.min_packing_qty);    
+    $('' + action + 'packing_unit').val(row.packing_unit);
+    $('' + action + 'cat_code').val(row.cat_code);
+    $('' + action + 'qc_flag').prop("checked",(row.qc_flag == 1 ? true : false ));
+    $('' + action + 'safety_stock').val(row.safety_stock);
+    
+	//$('#btn_edit_submit').attr("disabled",false);
+
+      
+  });	   
+    
+    
+//------------Ajax CRUD------------		
+//->New
+$('#btn_new_submit').click(function(){
+var action = '#new_';
+var mat_code = $('' + action + 'mat_code').val();
+var mat_text = $('' + action + 'mat_text').val();
+var cust_mat_code = $('' + action + 'cust_mat_code').val();  
+var base_unit = $("select[name='"+ action.replace("#","") +"base_unit']").val();
+var min_packing_qty = $('' + action + 'min_packing_qty').val();
+var packing_unit =$("select[name='"+ action.replace("#","") +"packing_unit']").val();
+var cat_code =  $("select[name='"+ action.replace("#","") +"cat_code']").val();
+var qc_flag = $('' + action + 'qc_flag').prop("checked");
+var safety_stock = $('' + action + 'safety_stock').val();  
+
+//防静电 -> QC
+if (cat_code == 'B'){
+	qc_flag = true;	
+}
+
+
+var isExist = checkMatExists('new');
+if (isExist == true){
+	layer.msg('物料编号:['+ mat_code +']在当前公司已存，保存失败，请检查！');
+	return;
+}
+
+
+var request=new XMLHttpRequest;
+           $.ajax({
+            type:"POST",
+	  dataType:"json",
+            //url:"test_ajax_action.php?number="+$("#keywords").val(),
+		url:"material_action.php",
+		data:{action:'add', 
+		  arguments:{      		      
+			mat_code:     		mat_code,
+			mat_text:     		mat_text,
+			cust_mat_code:      cust_mat_code,
+			base_unit:			base_unit,
+			min_packing_qty:	min_packing_qty,
+			packing_unit:     	packing_unit,	
+			cat_code:			cat_code,
+			qc_flag:			qc_flag,
+			safety_stock:		safety_stock,  		    	
+			  }
+			},
+            
+            success: function(data){
+			//alert(data.message);
+			
+               if(data.success){
+                  $("#message").html("["+data.message+"]");
+               }else{
+                  $("#message").html("MYSQL-0001:Parameter Error "+data.message); 
+               }
+			location.reload();
+			$("modal_new").modal('hide')
+            },
+		error:function(data){
+                alert("MYSQL-0002:Ajax Create Error - "+ data.responseText);
+            }
+	});
+});
+//<-New 
+
+//->Edit
+$('#btn_edit_submit').click(function(){
+var action = '#edit_';
+
+var id = $('' + action + 'id').val();
+var mat_code = $('' + action + 'mat_code').val();
+var mat_text = $('' + action + 'mat_text').val();
+var cust_mat_code = $('' + action + 'cust_mat_code').val();  
+var base_unit = $("select[name='"+ action.replace("#","") +"base_unit']").val();
+var min_packing_qty = $('' + action + 'min_packing_qty').val();
+var packing_unit =$("select[name='"+ action.replace("#","") +"packing_unit']").val();
+var cat_code =  $("select[name='"+ action.replace("#","") +"cat_code']").val();
+var qc_flag = $('' + action + 'qc_flag').prop("checked");
+var safety_stock = $('' + action + 'safety_stock').val();
+
+//防静电 -> QC
+if (cat_code == 'B'){
+	qc_flag = true;	
+}
+
+var isExist = checkMatExists('edit');
+
+if (isExist == true){
+	layer.msg('物料编号:['+ mat_code +']在当前公司已存，保存失败，请检查！');
+	return;
+}
+
+var request=new XMLHttpRequest;
+           $.ajax({
+            type:"POST",
+		dataType:"json",
+            //url:"test_ajax_action.php?number="+$("#keywords").val(),
+		url:"material_action.php",
+		data:{action:'edit', arguments:{
+				id: 		       id,
+				mat_code:     		mat_code,
+				mat_text:     		mat_text,
+				cust_mat_code:      cust_mat_code,
+				base_unit:			base_unit,
+				min_packing_qty:	min_packing_qty,
+				packing_unit:     	packing_unit,
+				cat_code:			cat_code,
+				qc_flag:			qc_flag, 
+				safety_stock:		safety_stock,  	 						
+				  }
+				},
+            
+            success: function(data){
+		//alert(data.message);
+	
+               if(data.success){
+                  $("#message").html("["+data.message+"]");
+               }else{
+                  $("#message").html("MYSQL-001:Parameter Error "+data.message); 
+               }
+		location.reload();
+		$("#modal_edit").modal('hide')
+               },
+	   error:function(data){
+                alert("MYSQL-003:AJAX Update Error - "+ data.responseText);
+               }
+	});
+});
+//<-edit 
+
+    
+//------------Ajax CRUD------------	
+
+//<=== End
+})
+</script>
+
+</head>
+<body>
+
+<!-- Page Toolbar Begin -->
+<nav class="navbar navbar-default" role="navigation"> 
+<div class="container-fluid" style="height:36px"> 
+<div class="navbar-header"> 
+<a class="navbar-brand" href="#">物料</a> 
+</div> <form class="navbar-form navbar-right"> 
+<button type="button" class="btn top btn-primary" data-toggle="modal" id="btn_new" data-target="#modal_new"> 
+<span class="glyphicon glyphicon-plus"></span>新增 </button> 
+<button type="button" class="btn btn-success" data-toggle="modal" id="btn_edit" data-target="#modal_edit"> 
+<span class="glyphicon glyphicon-edit"></span>编辑 </button> 
+<button type="button" class="btn btn-danger" data-toggle="modal" id="btn_delete" data-target="#modal_delete"> 
+<span class="glyphicon glyphicon-remove"></span>删除 </button> 
+<button type="button" class="btn btn-warning" data-toggle="modal" id="btn_refresh" data-target="#modal_refresh"> 
+<span class="glyphicon glyphicon-refresh"></span>刷新 </button> 
+<button type="button" class="btn btn-info" data-toggle="modal" id="btn_export" data-target="#modal_export"> 
+<span class="glyphicon glyphicon-export"></span>导出 </button> 
+</form> 
+</div> 
+</nav>
+
+<!-- Page Toolbar End -->
+
+<div id="div_material">
+<table id="datatable_material" class="display">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Country</th>
+        </tr>
+    </thead>
+    
+    <tbody>
+        <tr>
+            <td contenteditable="true">John</td>
+            <td contenteditable="true">28</td>
+            <td contenteditable="true">USA</td>
+        </tr>
+        <tr>
+            <td contenteditable="true">Marie</td>
+            <td contenteditable="true">22</td>
+            <td contenteditable="true">Canada</td>
+        </tr>
+        <tr>
+            <td contenteditable="true">Alex</td>
+            <td contenteditable="true">30</td>
+            <td contenteditable="true">UK</td>
+        </tr>
+    </tbody>
+    
+</table>
+</div>
+
+<script>
+$(document).ready(function() {
+	
+	
+    $('#datatable_material').DataTable();
+
+    // Listen for cell editing
+    $('#datatable_material').on('blur', 'td[contenteditable="true"]', function () {
+        var updatedContent = $(this).text();
+        console.log('Cell content updated:', updatedContent);
+
+        // Optional: Send the updated content to a server
+    });
+});
+
+
+async function pageLoad(){
+	
+	
+}
+
+async function getMaterial(){
+        const response = await fetch('material_action.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ action: 'retrieve',
+				 arguments: {
+					 company_code: '2'
+		    		}
+	    		 })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if(data.isExist){
+            	$("#div_material").innerHTML = data.rows[0]["html"];		                  
+            }	
+			  	
+            console.log(data);
+        } else {
+            console.error('Network response was not ok', response.status);
+        }	
+        	           
+	    
+ }	
+	
+getMaterial();
+
+</script>
+
+   
+</body>
+</html>

@@ -44,7 +44,7 @@ namespace classes\DB
         public function Retrieve_OneRow($sql)
         {
             $this->mysqldb->connect_db();
-            $result = $this->res_device = $this->mysqldb->db_getRow($sql);
+            $result = $this->mysqldb->db_getRow($sql);
             $this->mysqldb->close_db();
             return $result;
             
